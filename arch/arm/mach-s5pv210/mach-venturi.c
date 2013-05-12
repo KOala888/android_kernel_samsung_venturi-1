@@ -3831,12 +3831,23 @@ static void __init android_pmem_set_platdata(void)
 #endif
 
 #ifdef CONFIG_CPU_FREQ
-static struct s5pv210_cpufreq_voltage smdkc110_cpufreq_volt[] = {
 	{
- 		.freq	= 1200000,
+		.freq	= 1400000,
+		.varm	= 1350000,
+		.vint	= 1150000,
+	}, {
+		.freq	= 1300000,
+		.varm	= 1325000,
+		.vint	= 1125000,
+	}, {
+		.freq	= 1200000,
 		.varm	= 1275000,
- 		.vint	= 1100000,
- 	}, {
+		.vint	= 1100000,
+	}, {
+		.freq	= 1100000,
+		.varm	= 1275000,
+		.vint	= 1100000,
+	}, {
 		.freq	= 1000000,
 		.varm	= 1275000,
 		.vint	= 1100000,
@@ -4212,7 +4223,7 @@ static int wlan_power_en(int onoff)
 		s3c_gpio_slp_setpull_updown(GPIO_WLAN_BT_EN,
 					S3C_GPIO_PULL_NONE);
 
-		msleep(200);
+		msleep(80);
 	} else {
 		gpio_set_value(GPIO_WLAN_nRST, GPIO_LEVEL_LOW);
 		s3c_gpio_slp_cfgpin(GPIO_WLAN_nRST, S3C_GPIO_SLP_OUT0);
