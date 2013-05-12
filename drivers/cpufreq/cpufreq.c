@@ -1919,7 +1919,7 @@ static int __init cpufreq_core_init(void)
 						&cpu_sysdev_class.kset.kobj);
 	BUG_ON(!cpufreq_global_kobject);
 	register_syscore_ops(&cpufreq_syscore_ops);
-
+	
 	return 0;
 }
 core_initcall(cpufreq_core_init);
