@@ -413,11 +413,7 @@ static struct s5p_media_device aries_media_devs[] = {
 #ifdef CONFIG_CPU_FREQ
 static struct s5pv210_cpufreq_voltage smdkc110_cpufreq_volt[] = {
 	{
-		.freq	= 1400000,
-		.varm	= 1350000,
-		.vint	= 1150000,
-	}, {
-		.freq	= 1000000,
+		.freq	= 1200000,
 		.varm	= 1275000,
 		.vint	= 1100000,
 	}, {
@@ -1672,7 +1668,7 @@ static int ce147_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-	
+
 	/* Turn CAM_SENSOR_A_2.8V(VDDA) on */
 	gpio_set_value(GPIO_GPB7, 1);
 	mdelay(1);
@@ -1739,7 +1735,7 @@ static int ce147_power_on(void)
 			pr_err("Failed to initialize camera regulators\n");
 			return -EINVAL;
 	}
-	
+
 	ce147_init();
 
 	/* CAM_VGA_nSTBY - GPB(0)  */
@@ -1759,7 +1755,7 @@ static int ce147_power_on(void)
 
 		return err;
 	}
-	
+
 	ce147_ldo_en(TRUE);
 
 	mdelay(1);
@@ -1821,10 +1817,10 @@ static int ce147_power_off(void)
 
 	/* CAM_IO_EN - GPB(7) */
 	err = gpio_request(GPIO_GPB7, "GPB7");
-	
+
 	if(err) {
 		printk(KERN_ERR "failed to request GPB7 for camera control\n");
-	
+
 		return err;
 	}
 
@@ -1833,16 +1829,16 @@ static int ce147_power_off(void)
 
 	if(err) {
 		printk(KERN_ERR "failed to request GPJ0 for camera control\n");
-	
+
 		return err;
 	}
 
 	/* CAM_MEGA_nRST - GPJ1(5) */
 	err = gpio_request(GPIO_CAM_MEGA_nRST, "GPJ1");
-	
+
 	if(err) {
 		printk(KERN_ERR "failed to request GPJ1 for camera control\n");
-	
+
 		return err;
 	}
 
@@ -1872,26 +1868,26 @@ static int ce147_power_off(void)
 
 	// CAM_VGA_nRST  LOW		
 	gpio_direction_output(GPIO_CAM_VGA_nRST, 1);
-	
+
 	gpio_set_value(GPIO_CAM_VGA_nRST, 0);
 
 	mdelay(1);
 
 	// CAM_MEGA_nRST - GPJ1(5) LOW
 	gpio_direction_output(GPIO_CAM_MEGA_nRST, 1);
-	
+
 	gpio_set_value(GPIO_CAM_MEGA_nRST, 0);
-	
+
 	mdelay(1);
 
 	// Mclk disable
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, 0);
-	
+
 	mdelay(1);
 
 	// CAM_MEGA_EN - GPJ0(6) LOW
 	gpio_direction_output(GPIO_CAM_MEGA_EN, 1);
-	
+
 	gpio_set_value(GPIO_CAM_MEGA_EN, 0);
 
 	mdelay(1);
@@ -1899,7 +1895,7 @@ static int ce147_power_off(void)
 	ce147_ldo_en(FALSE);
 
 	mdelay(1);
-	
+
 	gpio_free(GPIO_CAM_MEGA_EN);
 	gpio_free(GPIO_CAM_MEGA_nRST);
 	gpio_free(GPIO_CAM_VGA_nRST);
@@ -1958,7 +1954,7 @@ static int smdkc110_cam1_power(int onoff)
 	}
 
 	gpio_direction_output(S5PV210_GPB(0), 0);
-	
+
 	mdelay(1);
 
 	gpio_direction_output(S5PV210_GPB(0), 1);
@@ -1970,7 +1966,7 @@ static int smdkc110_cam1_power(int onoff)
 	mdelay(1);
 
 	gpio_free(S5PV210_GPB(0));
-	
+
 	mdelay(1);
 
 	/* CAM_VGA_nRST - GPB(2) */
@@ -3131,7 +3127,7 @@ static struct gpio_init_data aries_init_gpios[] = {
 		.pud	= S3C_GPIO_PULL_NONE,
 		.drv	= S3C_GPIO_DRVSTR_1X,
 	}, 
-	
+
 	// GPE0 ----------------------------
 	{
 		.num	= S5PV210_GPE0(0), // GPIO_CAM_PCLK
@@ -5491,7 +5487,7 @@ static void __init aries_machine_init(void)
 	/* optical sensor */
 	gp2a_gpio_init();
 	i2c_register_board_info(11, i2c_devs11, ARRAY_SIZE(i2c_devs11));
-	
+
 	/* yamaha magnetic sensor */
 	i2c_register_board_info(12, i2c_devs12, ARRAY_SIZE(i2c_devs12));
 
@@ -5502,7 +5498,7 @@ static void __init aries_machine_init(void)
 	/* panel */
 	spi_register_board_info(spi_board_info, ARRAY_SIZE(spi_board_info));
 	s3cfb_set_platdata(&tl2796_data);
-	
+
 #if defined(CONFIG_S5P_ADC)
 	s3c_adc_set_platdata(&s3c_adc_platform);
 #endif
