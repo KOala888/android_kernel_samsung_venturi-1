@@ -3832,6 +3832,7 @@ static void __init android_pmem_set_platdata(void)
 #endif
 
 #ifdef CONFIG_CPU_FREQ
+static struct s5pv210_cpufreq_voltage smdkc110_cpufreq_volt[] = {
 {
 		.freq	= 1400000,
 		.varm	= DVSARM1,
