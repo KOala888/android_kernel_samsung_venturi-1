@@ -63,3 +63,4 @@ obj-$(CONFIG_VIBETONZ)		+= vibetonz/
 obj-$(CONFIG_CUSTOM_VOLTAGE)	+= custom_voltage.o
 obj-$(CONFIG_LIVE_OC)    += live_oc.o
 obj-$(CONFIG_SAMSUNG_PARAM)	+= param/
+obj-$(CONFIG_BLD)    += bld.o
