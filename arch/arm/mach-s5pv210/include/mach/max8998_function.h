@@ -181,13 +181,7 @@ typedef enum {
     EN32KHZCP,
     ENVICHG,
     RAMP,
-             
-    DVSARM1,
-    DVSARM2,
-    DVSARM3,
-    DVSARM4,
-    DVSINT1,
-    DVSINT2,
+
     BUCK3,
     BUCK4,
     LDO2,
