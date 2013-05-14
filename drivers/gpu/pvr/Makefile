@@ -13,7 +13,7 @@ ccflags-y := \
 	-Werror\
 	-fno-strict-aliasing\
 	-Wno-pointer-arith\
-	-Os
+	-Ofast -ffast-math -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -mtune=cortex-a8 -marm -march=armv7-a -mfpu=neon -ftree-vectorize 
 
 ccflags-y += -DLINUX -D__linux__ -DANDROID
 ccflags-y += -Idrivers/gpu/pvr
