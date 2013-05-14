@@ -3579,8 +3579,6 @@ static void fsa9480_usb_cb(bool attached)
 	  fsa9480_charger_cb(attached);
 	}
 
-	mtp_off_status = false;
-
 	else
 	{
 #endif
