@@ -499,21 +499,6 @@ static struct miscdevice bl_led_device = {
 		.name = "notification",
 };
 
-
-#ifdef CONFIG_TOUCH_WAKE
-  {
-    enable_touchkey_backlights();
-  }
-#else
-  pr_info("%s: cannot set notification led, touchkeys are enabled\n",__FUNCTION__);
-#endif
-
-#ifdef CONFIG_TOUCH_WAKE
-  else {
-    disable_touchkey_backlights();
-  }
-#endif  
-
 static int cypress_touchkey_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
 {
