@@ -146,7 +146,7 @@ static unsigned int wm8994_read_hw(struct snd_soc_codec *codec, u16 reg)
 	struct i2c_client *i2c = codec->control_data;
 
 	data = ((reg & 0xff00) >> 8) | ((reg & 0xff) << 8);
-	
+
 	/* Write register */
 	xfer[0].addr = i2c->addr;
 	xfer[0].flags = 0;
@@ -302,14 +302,14 @@ static int wm8994_set_mic_path(struct snd_kcontrol *kcontrol,
 	struct wm8994_priv *wm8994 = codec->drvdata;
 
 	DEBUG_LOG("");
-			
+
 	if (ucontrol->value.integer.value[0] == 0) // MAIN MIC
                 wm8994->rec_path = MAIN;
 	else if (ucontrol->value.integer.value[0] == 1) // SUB MIC
                 wm8994->rec_path = SUB;
 	else
 		return -EINVAL;
-	
+
 	audio_ctrl_mic_bias_gpio(1);
 	 wm8994->universal_mic_path[wm8994->rec_path ](codec);
 	return 0;
@@ -380,10 +380,10 @@ static int wm8994_set_path(struct snd_kcontrol *kcontrol,
 	wm8994->cur_path = path_num;
 	wm8994->call_state = DISCONNECT;
 	wm8994->universal_playback_path[wm8994->cur_path](codec);
-	
+
 	if(wm8994->mic_state == MIC_NO_USE)
 		audio_ctrl_mic_bias_gpio(0);
-	
+
 	return 0;
 }
 
@@ -413,29 +413,29 @@ static int wm8994_set_voice_path(struct snd_kcontrol *kcontrol,
 
 	// Get path value
 	int path_num = ucontrol->value.integer.value[0];	
-	
+
 	if(strcmp( mc->texts[path_num], voicecall_path[path_num]) )
 	{		
 		DEBUG_LOG_ERR("Unknown path %s\n", mc->texts[path_num] );
 		return -ENODEV;
 	}
-	
+
 	wm8994->cur_path = path_num;
 	wm8994->call_state = CONNECT;
-	
+
 	switch(path_num)
 	{
 		case OFF :
 			DEBUG_LOG("Switching off output path\n");
 			break;
-			
+
 		case RCV :
 		case SPK :
 		case HP :
 		case BT :
 			DEBUG_LOG("routing  voice path to  %s \n", mc->texts[path_num] );
 			break;
-		
+
 		default:
 			DEBUG_LOG_ERR("The audio path[%d] does not exists!! \n", path_num);
 			return -ENODEV;
@@ -467,27 +467,27 @@ static int wm8994_set_fmradio_path(struct snd_kcontrol *kcontrol,
 	struct soc_enum *mc =
 		(struct soc_enum *)kcontrol->private_value;
 	struct wm8994_priv *wm8994 = codec->drvdata;
-	
+
 	int path_num = ucontrol->value.integer.value[0];	
-	
+
 	if(strcmp( mc->texts[path_num], fmradio_path[path_num]) )
 	{		
 		DEBUG_LOG_ERR("Unknown path %s\n", mc->texts[path_num] );		
 	}
-	
+
 	if(path_num == wm8994->fmradio_path)
 	{
 		DEBUG_LOG("%s is already set. skip to set path.. \n", mc->texts[path_num]);
 		return 0;
 	}
-		
+
 	switch(path_num)
 	{
 		case FMR_OFF:
 			DEBUG_LOG("Switching off output path\n");
 			wm8994_disable_fmradio_path(codec, FMR_OFF);
 			break;
-			
+
 		case FMR_SPK:
 			DEBUG_LOG("routing  fmradio path to  %s \n", mc->texts[path_num] );
 			wm8994_set_fmradio_speaker(codec);
@@ -518,7 +518,7 @@ static int wm8994_set_fmradio_path(struct snd_kcontrol *kcontrol,
 			return -ENODEV;
 			break;
 	}
-	
+
 	return 0;
 }
 
@@ -577,7 +577,7 @@ static int wm8994_set_mic_status(struct snd_kcontrol *kcontrol,
 void wm8994_set_off(struct snd_soc_codec *codec)
 {
 	DEBUG_LOG("");
-	
+
 	audio_power(0);
 }
 
@@ -767,7 +767,7 @@ static int configure_clock(struct snd_soc_codec *codec)
 
 			reg = wm8994_read(codec,WM8994_AIF1_CLOCKING_1);
 			reg &= 0x07; //clear clksrc bits ..now it is for MCLK
-			
+
 			if(wm8994->mclk_rate > 13500000)
 			{
 				reg |= WM8994_AIF1CLK_DIV ; 
@@ -1086,7 +1086,7 @@ static int wm8994_set_dai_fmt(struct snd_soc_dai *dai,
 	wm8994_write(codec,WM8994_AIF1_CONTROL_1, aif1);
 	wm8994_write(codec,WM8994_AIF1_MASTER_SLAVE, aif2);
 	wm8994_write( codec,WM8994_AIF1_CONTROL_2, 0x4000);
-	
+
 	return 0;
 }
 
@@ -1224,7 +1224,7 @@ static int wm8994_hw_params(struct snd_pcm_substream *substream,
 #endif	
 	wm8994_write(codec,WM8994_AIF1_RATE, clocking3);
 	wm8994_write(codec, WM8994_AIF1_CONTROL_1, aif1);
-	
+
 	return 0;
 }
 
@@ -1271,8 +1271,8 @@ static int wm8994_startup(struct snd_pcm_substream *substream, struct snd_soc_da
 	else{
 	rec_en_dis = 1;
 	}
-	
-	
+
+
 	if(wm8994->testmode_config_flag)
 	{
 		DEBUG_LOG_ERR("Testmode is activated!! Skip statup sequence!!");
@@ -1336,7 +1336,7 @@ static void wm8994_shutdown(struct snd_pcm_substream *substream, struct snd_soc_
 			vtCallActive = 0;
 #endif
                 }
-		
+
 
 #if 0
 		if(wm8994->mic_state == MIC_NO_USE)
@@ -1368,7 +1368,7 @@ static void wm8994_shutdown(struct snd_pcm_substream *substream, struct snd_soc_
 		DEBUG_LOG("Preserve codec state for call[%d].", wm8994->call_state);
 
 		DEBUG_LOG("exiting ...%s...",__func__);
-		
+
 }
 
 #if defined ATTACH_ADDITINAL_PCM_DRIVER
@@ -1385,7 +1385,7 @@ static int wm8994_pcm_startup(struct snd_pcm_substream *substream, struct snd_so
 		wm8994->cur_path = OFF;
 		//wm8994->codec_state = DEACTIVE;
 		wm8994->power_state = CODEC_OFF;
-		
+
 		DEBUG_LOG("Turn on codec!! Power state =[%d]", wm8994->power_state);
 
 		// For initialize codec.	
@@ -1404,7 +1404,7 @@ static int wm8994_pcm_startup(struct snd_pcm_substream *substream, struct snd_so
 		reg = wm8994_read(codec,WM8994_AIF1_CLOCKING_1);
 		reg |= (WM8994_AIF1CLK_SRC_FLL1 | WM8994_AIF1CLK_ENA); //enable the clocks
 		wm8994_write(codec, WM8994_AIF1_CLOCKING_1, reg);
-	
+
 		//Enable clocks to the Audio core and sysclk of wm8994	
 		reg = wm8994_read(codec, WM8994_CLOCKING_1 );
 		reg &= ~(WM8994_SYSCLK_SRC_MASK | WM8994_DSP_FSINTCLK_ENA_MASK|WM8994_DSP_FS1CLK_ENA_MASK);
@@ -1434,7 +1434,7 @@ static struct snd_soc_dai_ops wm8994_ops = {
 };
 
 struct snd_soc_dai wm8994_dai = {
-	
+
 		.name = "WM8994 PAIFRX",
 		.playback = {
 			.stream_name = "Playback",
@@ -1702,7 +1702,7 @@ static int wm8994_add_i2c_device(struct platform_device *pdev,
 		dev_err(&pdev->dev, "can't add i2c driver\n");
 		return ret;
 	}
-	
+
 	return 0;
 
 err_driver:
@@ -1822,7 +1822,7 @@ static int wm8994_suspend(struct platform_device *pdev,pm_message_t msg )
         struct wm8994_priv *wm8994 = codec->drvdata;
 
 	DEBUG_LOG("%s..",__func__);
-	
+
 	if(wm8994->testmode_config_flag)
 	{
 		DEBUG_LOG_ERR("Testmode is activated!! Skip suspend sequence!!");
@@ -1832,10 +1832,10 @@ static int wm8994_suspend(struct platform_device *pdev,pm_message_t msg )
 	if(wm8994->call_state == DISCONNECT && wm8994->cur_path == OFF )
 	{
 		wm8994->power_state = OFF;
-		
+
 		audio_power(0);		
 	}
-		
+
 	return 0;
 }
 
