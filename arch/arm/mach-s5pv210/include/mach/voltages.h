@@ -23,8 +23,10 @@
 #define DVSARM4 1250000 //1000
 #define DVSARM5 1200000 //800
 #define DVSARM6 1050000 //400
+/*
 #define DVSARM7 950000 //200
 #define DVSARM8 950000  //100
+*/
 
 #define ARMBOOT 1250000
 #define INTBOOT 1100000
@@ -34,7 +36,9 @@
 #define DVSINT3 1100000 //1200, 1100
 #define DVSINT4 1100000 //1000
 #define DVSINT5 1100000 //200, 400, 800
+/*
 #define DVSINT6 1000000 //100
+*/
 
 
 #endif /* __ASM_ARCH_VOLTAGES_H */
