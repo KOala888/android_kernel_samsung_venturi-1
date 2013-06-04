@@ -36,7 +36,7 @@ static DEFINE_MUTEX(set_freq_lock);
 
 /* APLL M,P,S values for 1.4G/1.3G/1.2G/1.1G/1G/800Mhz */
 #define APLL_VAL_1400   ((1 << 31) | (175 << 16) | (3 << 8) | 1)
-#define APLL_VAL_1300	((1 << 31) | (325 << 16) | (6 << 8) | 1)
+#define APLL_VAL_1320	((1 << 31) | (165 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1200	((1 << 31) | (150 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1100   ((1 << 31) | (141 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1000	((1 << 31) | (125 << 16) | (3 << 8) | 1)
@@ -80,7 +80,7 @@ enum s5pv210_dmc_port {
 
 static struct cpufreq_frequency_table s5pv210_freq_table[] = {
 	{OC0, 1400*1000},
-	{OC1, 1300*1000},
+	{OC1, 1320*1000},
 	{OC2, 1200*1000},
 	{OC3, 1100*1000},
 	{L0, 1000*1000},
@@ -126,7 +126,7 @@ static struct s5pv210_dvs_conf dvs_conf[] = {
 		.arm_volt   = DVSARM1,
 		.int_volt   = DVSINT1,
 	},
-	[OC1] = { //1300
+	[OC1] = { //1320
 		.arm_volt   = DVSARM2,
 		.int_volt   = DVSINT2,
 	},
@@ -173,8 +173,8 @@ static u32 clkdiv_val[9][11] = {
 	/* OC0 : [1400/200/200/100][166/83][133/66][200/200] */
 	{0, 6, 6, 1, 3, 1, 4, 1, 3, 0, 0},
 
-	/* OC1 : [1300/200/200/100][166/83][133/66][200/200] */
-	{0, 5.5, 5.5, 1, 3, 1, 4, 1, 3, 0, 0},
+	/* OC1 : [1320/200/200/100][166/83][133/66][200/200] */
+	{0, 5.6, 5.6, 1, 3, 1, 4, 1, 3, 0, 0},
 	
 	/* OC2 : [1200/200/100][166/83][133/66][200/200] */
 	{0, 5, 5, 1, 3, 1, 4, 1, 3, 0, 0},
@@ -207,7 +207,7 @@ extern unsigned long get_oc_low_freq(void);
 extern unsigned long get_oc_high_freq(void);
 static unsigned long sleep_freq;
 
-static unsigned long original_fclk[] = {1400000, 1300000, 1200000, 1100000, 1000000, 800000, 800000, 800000, 800000};
+static unsigned long original_fclk[] = {1400000, 1320000, 1200000, 1100000, 1000000, 800000, 800000, 800000, 800000};
 
 static u32 apll_values[sizeof(original_fclk) / sizeof(unsigned long)];
 static int apll_old;
@@ -534,7 +534,7 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 			__raw_writel(APLL_VAL_1400, S5P_APLL_CON);
 			break;
 		case OC1:
-			__raw_writel(APLL_VAL_1300, S5P_APLL_CON);
+			__raw_writel(APLL_VAL_1320, S5P_APLL_CON);
 			break;
 		case OC2:
 			__raw_writel(APLL_VAL_1200, S5P_APLL_CON);
@@ -867,7 +867,7 @@ EXPORT_SYMBOL(cpuOC0freq);
 
 unsigned long cpuOC1freq(void)
 {
-    return s5pv210_freq_table[OC1].frequency; // 1300 mhz
+    return s5pv210_freq_table[OC1].frequency; // 1320 mhz
 }
 EXPORT_SYMBOL(cpuOC1freq);
 
