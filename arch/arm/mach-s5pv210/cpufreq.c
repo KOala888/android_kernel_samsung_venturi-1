@@ -34,11 +34,15 @@ static struct clk *dmc1_clk;
 static struct cpufreq_freqs freqs;
 static DEFINE_MUTEX(set_freq_lock);
 
-/* APLL M,P,S values for 1.4G/1.3G/1.2G/1.1G/1G/800Mhz */
+/* APLL M,P,S values for 1.2G/1G/800Mhz */
+/* 
 #define APLL_VAL_1400   ((1 << 31) | (175 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1320	((1 << 31) | (165 << 16) | (3 << 8) | 1)
+ */
 #define APLL_VAL_1200	((1 << 31) | (150 << 16) | (3 << 8) | 1)
+/* 
 #define APLL_VAL_1100   ((1 << 31) | (141 << 16) | (3 << 8) | 1)
+ */
 #define APLL_VAL_1000	((1 << 31) | (125 << 16) | (3 << 8) | 1)
 #define APLL_VAL_800	((1 << 31) | (100 << 16) | (3 << 8) | 1)
 
@@ -79,17 +83,20 @@ enum s5pv210_dmc_port {
 };
 
 static struct cpufreq_frequency_table s5pv210_freq_table[] = {
+	/*
 	{OC0, 1400*1000},
 	{OC1, 1320*1000},
+	*/
 	{OC2, 1200*1000},
+	/* 
 	{OC3, 1100*1000},
+	*/
 	{L0, 1000*1000},
 	{L1, 800*1000},
 	{L2, 400*1000},
-	/*
 	{L3, 200*1000},
 	{L4, 100*1000},
-	*/
+	
 	{0, CPUFREQ_TABLE_END},
 };
 
@@ -103,25 +110,24 @@ struct s5pv210_dvs_conf {
 
 #ifdef CONFIG_DVFS_LIMIT
 static unsigned int g_dvfs_high_lock_token = 0;
-static unsigned int g_dvfs_high_lock_limit = 7;
+static unsigned int g_dvfs_high_lock_limit = 6;
 static unsigned int g_dvfslockval[DVFS_LOCK_TOKEN_NUM];
 //static DEFINE_MUTEX(dvfs_high_lock);
 #endif
 
 #ifdef CONFIG_CUSTOM_VOLTAGE
-unsigned long arm_volt_max = 1500000;
-unsigned long int_volt_max = 1250000;
+unsigned long arm_volt_max = 1425000;
+unsigned long int_volt_max = 1175000;
 unsigned long L1_int_volt = DVSINT5;
 unsigned long L2_int_volt = DVSINT5;
-/*
 unsigned long L3_int_volt = DVSINT5;
-*/
 #else
-const unsigned long arm_volt_max = 1500000;
-const unsigned long int_volt_max = 1250000;
+const unsigned long arm_volt_max = 1425000;
+const unsigned long int_volt_max = 1175000;
 #endif
 
 static struct s5pv210_dvs_conf dvs_conf[] = {
+	/*
 	[OC0] = { //1400
 		.arm_volt   = DVSARM1,
 		.int_volt   = DVSINT1,
@@ -130,14 +136,17 @@ static struct s5pv210_dvs_conf dvs_conf[] = {
 		.arm_volt   = DVSARM2,
 		.int_volt   = DVSINT2,
 	},
+	*/
 	[OC2] = { //1200
 		.arm_volt   = DVSARM3,
 		.int_volt   = DVSINT3,
 	},
+	/*
 	[OC3] = { //1100
 		.arm_volt   = DVSARM3,
 		.int_volt   = DVSINT3,
 	},
+	*/
 	[L0] = { //1000
 		.arm_volt   = DVSARM4,
 		.int_volt   = DVSINT4,
@@ -150,7 +159,6 @@ static struct s5pv210_dvs_conf dvs_conf[] = {
 		.arm_volt   = DVSARM6,
 		.int_volt   = DVSINT5,
 	},
-	/*
 	[L3] = { //200
 		.arm_volt   = DVSARM7,
 		.int_volt   = DVSINT5,
@@ -159,10 +167,10 @@ static struct s5pv210_dvs_conf dvs_conf[] = {
 		.arm_volt   = DVSARM8,
 		.int_volt   = DVSINT6,
 	},
-	*/
+	
 };
 
-static u32 clkdiv_val[9][11] = {
+static u32 clkdiv_val[6][11] = {
 	/*
 	 * Clock divider value for following
 	 * { APLL, A2M, HCLK_MSYS, PCLK_MSYS,
@@ -171,16 +179,16 @@ static u32 clkdiv_val[9][11] = {
 	 */
 
 	/* OC0 : [1400/200/200/100][166/83][133/66][200/200] */
-	{0, 6, 6, 1, 3, 1, 4, 1, 3, 0, 0},
+	/*{0, 6, 6, 1, 3, 1, 4, 1, 3, 0, 0},*/
 
 	/* OC1 : [1320/200/200/100][166/83][133/66][200/200] */
-	{0, 5.6, 5.6, 1, 3, 1, 4, 1, 3, 0, 0},
+	/*{0, 5.6, 5.6, 1, 3, 1, 4, 1, 3, 0, 0},*/
 	
 	/* OC2 : [1200/200/100][166/83][133/66][200/200] */
 	{0, 5, 5, 1, 3, 1, 4, 1, 3, 0, 0},
 
 	/* OC3 : [1100/200/200/100][166/83][133/66][200/200] */
-	{0, 4.5, 4.5, 1, 3, 1, 4, 1, 3, 0, 0},
+	/*{0, 4.5, 4.5, 1, 3, 1, 4, 1, 3, 0, 0},*/
 
 	/* L0 : [1000/200/100][166/83][133/66][200/200] */
 	{0, 4, 4, 1, 3, 1, 4, 1, 3, 0, 0},
@@ -192,10 +200,10 @@ static u32 clkdiv_val[9][11] = {
 	{1, 3, 1, 1, 3, 1, 4, 1, 3, 0, 0},
 
 	/* L3 : [200/200/100][166/83][133/66][200/200] */
-	/*{3, 3, 0, 1, 3, 1, 4, 1, 3, 0, 0}, */
+	{3, 3, 0, 1, 3, 1, 4, 1, 3, 0, 0}, 
 
 	/* L4 : [100/100/100][83/83][66/66][100/100] */
-	/*{7, 7, 0, 0, 7, 0, 9, 0, 7, 0, 0}, */
+	{7, 7, 0, 0, 7, 0, 9, 0, 7, 0, 0}, 
 };
 
 #ifdef CONFIG_LIVE_OC
@@ -207,7 +215,7 @@ extern unsigned long get_oc_low_freq(void);
 extern unsigned long get_oc_high_freq(void);
 static unsigned long sleep_freq;
 
-static unsigned long original_fclk[] = {1400000, 1320000, 1200000, 1100000, 1000000, 800000, 800000, 800000, 800000};
+static unsigned long original_fclk[] = {/*1400000, 1320000,*/ 1200000,/* 1100000,*/ 1000000, 800000, 800000, 800000, 800000};
 
 static u32 apll_values[sizeof(original_fclk) / sizeof(unsigned long)];
 static int apll_old;
@@ -464,7 +472,7 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 		} while (reg & ((1 << 7) | (1 << 3)));
 
 		/*
-		 * 3. DMC1 refresh count for 133Mhz if (index == L2) is
+		 * 3. DMC1 refresh count for 133Mhz if (index == L4) is
 		 * true refresh counter is already programed in upper
 		 * code. 0x287@83Mhz
 		 */
@@ -509,7 +517,7 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 	/* ARM MCS value changed */
 	reg = __raw_readl(S5P_ARM_MCS_CON);
 	reg &= ~0x3;
-	if (index >= L2)
+	if (index >= L3)
 		reg |= 0x3;
 	else
 		reg |= 0x1;
@@ -595,7 +603,7 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 
 		/*
 		 * 10. DMC1 refresh counter
-		 * L2 : DMC1 = 100Mhz 7.8us/(1/100) = 0x30c
+		 * L4 : DMC1 = 100Mhz 7.8us/(1/100) = 0x30c
 		 * Others : DMC1 = 200Mhz 7.8us/(1/200) = 0x618
 		 */
 		if (!bus_speed_changing)
@@ -603,7 +611,7 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 	}
 
 	/*
-	 * L2 level need to change memory bus speed, hence onedram clock divier
+	 * L4 level need to change memory bus speed, hence onedram clock divier
 	 * and memory refresh parameter should be changed
 	 */
 	if (bus_speed_changing) {
@@ -857,32 +865,31 @@ void customvoltage_freqvolt(unsigned long * freqs, unsigned long * arm_voltages,
     return;
 }
 EXPORT_SYMBOL(customvoltage_freqvolt);
-
+/*
 unsigned long cpuOC0freq(void)
 {
     return s5pv210_freq_table[OC0].frequency; // 1400 mhz
 }
 EXPORT_SYMBOL(cpuOC0freq);
 
-
 unsigned long cpuOC1freq(void)
 {
     return s5pv210_freq_table[OC1].frequency; // 1320 mhz
 }
 EXPORT_SYMBOL(cpuOC1freq);
-
+*/
 unsigned long cpuOC2freq(void)
 {
     return s5pv210_freq_table[OC2].frequency; // 1200 mhz
 }
 EXPORT_SYMBOL(cpuOC2freq);
-
+/*
 unsigned long cpuOC3freq(void)
 {
     return s5pv210_freq_table[OC3].frequency; // 1100 mhz
 }
 EXPORT_SYMBOL(cpuOC3freq);
-
+*/
 unsigned long cpuL0freq(void)
 {
     return s5pv210_freq_table[L0].frequency; // 1000 mhz
@@ -900,7 +907,7 @@ unsigned long cpuL2freq(void)
     return s5pv210_freq_table[L2].frequency; // 400 mhz
 }
 EXPORT_SYMBOL(cpuL2freq);
-/*
+
 unsigned long cpuL3freq(void)
 {
     return s5pv210_freq_table[L3].frequency; // 200 mhz
@@ -912,7 +919,7 @@ unsigned long cpuL4freq(void)
     return s5pv210_freq_table[L4].frequency; // 100 mhz
 }
 EXPORT_SYMBOL(cpuL4freq);
-*/
+
 
 #endif
 
@@ -977,7 +984,7 @@ static int s5pv210_cpu_init(struct cpufreq_policy *policy)
 
 	ret = cpufreq_frequency_table_cpuinfo(policy, s5pv210_freq_table);
 	if (!ret)
-		policy->max = 1000000;
+		policy->max = 1200000;
 	return ret;
 }
 
