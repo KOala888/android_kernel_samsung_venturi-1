@@ -61,5 +61,4 @@ obj-$(CONFIG_USB_SWITCH_FSA9480)	+= fsa9480.o
 obj-$(CONFIG_SAMSUNG_MODEMCTL) += samsung_modemctl/
 obj-$(CONFIG_VIBETONZ)		+= vibetonz/
 obj-$(CONFIG_CUSTOM_VOLTAGE)	+= custom_voltage.o
-obj-$(CONFIG_LIVE_OC)    += live_oc.o
 obj-$(CONFIG_SAMSUNG_PARAM)	+= param/

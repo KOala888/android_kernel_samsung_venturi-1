@@ -18,7 +18,8 @@ extern void customvoltage_updatearmvolt(unsigned long * arm_voltages);
 extern void customvoltage_updateintvolt(unsigned long * int_voltages);
 extern void customvoltage_updatemaxvolt(unsigned long * max_voltages);
 extern int customvoltage_numfreqs(void);
-extern void customvoltage_freqvolt(unsigned long * freqs, unsigned long * arm_voltages, unsigned long * int_voltages, unsigned long * max_voltages);
+extern void customvoltage_freqvolt(unsigned long * freqs, unsigned long * arm_voltages,
+				   unsigned long * int_voltages, unsigned long * max_voltages);
 
 static int num_freqs;
 
@@ -65,7 +66,7 @@ ssize_t customvoltage_armvolt_write(struct device * dev, struct device_attribute
 			    next_freq++;
 			}
 
-		    if (buf[i] == '\0' || next_freq >= num_freqs)
+		    if (buf[i] == '\0' || next_freq > num_freqs)
 			{
 			    break;
 			}
@@ -117,7 +118,7 @@ static ssize_t customvoltage_intvolt_write(struct device * dev, struct device_at
 			    next_freq++;
 			}
 
-		    if (buf[i] == '\0' || next_freq >= num_freqs)
+		    if (buf[i] == '\0' || next_freq > num_freqs)
 			{
 			    break;
 			}
@@ -234,4 +235,3 @@ static int __init customvoltage_init(void)
 }
 
 device_initcall(customvoltage_init);
-
