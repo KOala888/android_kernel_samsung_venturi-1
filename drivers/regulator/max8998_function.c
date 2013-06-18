@@ -1678,13 +1678,15 @@ boolean Set_MAX8998_PM_OUTPUT_Voltage(max8998_pm_section_type ldo_num, out_volta
 {
     boolean ret_val;
 
-    if( (ldo_num < 1350000) || (ldo_num > LDO17) )
+    if( (ldo_num < DVSARM3) || (ldo_num > LDO17) )
     {
         // Invalid buck or ldo register
         return FALSE; // return error
     }
 
     switch(ldo_num) {
+    case DVSARM3:
+    case DVSARM4:
         ret_val = Set_MAX8998_PM_BUCK1_2_Voltage(ldo_num, set_value);
         break;
     case BUCK4:

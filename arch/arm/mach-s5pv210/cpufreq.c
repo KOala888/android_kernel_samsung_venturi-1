@@ -33,11 +33,11 @@ static struct cpufreq_freqs freqs;
 static DEFINE_MUTEX(set_freq_lock);
 
 /* APLL M,P,S values for 1.4G/1.3G/1.2G/1.1G/1G/800Mhz */
-#define APLL_VAL_1520	((1 << 31) | (180 << 16) | (3 << 8) | 1)
+#define APLL_VAL_1520	((1 << 31) | (190 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1440	((1 << 31) | (180 << 16) | (3 << 8) | 1)
-#define APLL_VAL_1380	((1 << 31) | (345 << 16) | (6 << 8) | 1)
+#define APLL_VAL_1380	((1 << 31) | (172,5 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1320	((1 << 31) | (165 << 16) | (3 << 8) | 1)
-#define APLL_VAL_1260	((1 << 31) | (315 << 16) | (6 << 8) | 1)
+#define APLL_VAL_1260	((1 << 31) | (157,5 << 16) | (3 << 8) | 1)
 
 #define APLL_VAL_1200	((1 << 31) | (150 << 16) | (3 << 8) | 1)
 #define APLL_VAL_1000	((1 << 31) | (125 << 16) | (3 << 8) | 1)
@@ -495,22 +495,16 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 		 */
 		switch (index) {
 		case OC0:
-			__raw_writel(APLL_VAL_1520, S5P_APLL_CON);
+			__raw_writel(APLL_VAL_1400, S5P_APLL_CON);
 			break;
 		case OC1:
-			__raw_writel(APLL_VAL_1440, S5P_APLL_CON);
+			__raw_writel(APLL_VAL_1300, S5P_APLL_CON);
 			break;
 		case OC2:
-			__raw_writel(APLL_VAL_1380, S5P_APLL_CON);
+			__raw_writel(APLL_VAL_1200, S5P_APLL_CON);
 			break;
 		case OC3:
-			__raw_writel(APLL_VAL_1320, S5P_APLL_CON);
-			break;
-		case OC4:
-			__raw_writel(APLL_VAL_1260, S5P_APLL_CON);
-			break;
-		case OC5:
-			__raw_writel(APLL_VAL_1200, S5P_APLL_CON);
+			__raw_writel(APLL_VAL_1100, S5P_APLL_CON);
 			break;
 		case L0:
 			__raw_writel(APLL_VAL_1000, S5P_APLL_CON);
