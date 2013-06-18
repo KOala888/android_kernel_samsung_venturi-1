@@ -12,7 +12,7 @@
 #include <linux/miscdevice.h>
 #define LIVEOC_VERSION 1
 
-#define MAX_OCVALUE 130
+#define MAX_OCVALUE 150
 
 
 extern void liveoc_update(unsigned int oc_value, unsigned int oc_low_freq, unsigned int oc_high_freq, unsigned int selective_oc);
@@ -25,7 +25,7 @@ static int selective_oc = 0;
 static int oc_low_freq = 800000;
 
 /* Apply Live OC to 2000MHz and below */
-static int oc_high_freq = 1200000;
+static int oc_high_freq = 1400000;
 
 static ssize_t liveoc_ocvalue_read(struct device * dev, struct device_attribute * attr, char * buf)
 {
@@ -141,8 +141,8 @@ static ssize_t liveoc_selectiveoc_enable_write(struct device * dev, struct devic
 	    if (data != selective_oc)
 		{
 		if (data == 0){
-		oc_low_freq = 100000;
-		oc_high_freq = 1200000;
+		oc_low_freq = 400000;
+		oc_high_freq = 1400000;
 		}
 //		    oc_value = 100;	
 //		    selective_oc = data;
