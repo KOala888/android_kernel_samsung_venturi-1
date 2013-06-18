@@ -4,6 +4,7 @@
 // (C) 2004 Maxim Integrated Products
 //---------------------------------------------------------------------------
 #include <linux/delay.h>
+#include <mach/voltages.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <asm/io.h>
@@ -19,6 +20,7 @@
 #include <linux/wakelock.h>
 #include <linux/i2c.h>
 #include <linux/mfd/max8998.h>
+#include <mach/voltages.h>
 #if defined(CONFIG_MACH_VENTURI)
 #include <mach/param.h>
 #endif
