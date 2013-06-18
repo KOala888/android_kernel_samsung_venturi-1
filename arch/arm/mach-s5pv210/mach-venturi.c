@@ -57,6 +57,7 @@
 
 #include <mach/sec_switch.h>
 
+#include <mach/voltages.h>
 #include <linux/usb/gadget.h>
 #include <linux/fsa9480.h>
 
@@ -232,7 +233,7 @@ static void gps_gpio_init(void)
 	if (device_create_file(gps_dev, &dev_attr_hwrev) < 0)
 		pr_err("Failed to create device file(%s)!\n",
 		       dev_attr_hwrev.attr.name);
-
+	
 	gpio_request(GPIO_GPS_nRST, "GPS_nRST");	/* XMMC3CLK */
 	s3c_gpio_setpull(GPIO_GPS_nRST, S3C_GPIO_PULL_NONE);
 	s3c_gpio_cfgpin(GPIO_GPS_nRST, S3C_GPIO_OUTPUT);
@@ -692,7 +693,7 @@ static struct regulator_init_data aries_buck1_data = {
 		.valid_ops_mask	= REGULATOR_CHANGE_VOLTAGE |
 				  REGULATOR_CHANGE_STATUS,
 		.state_mem	= {
-			.uV	= 1250000,
+			.uV	= ARMBOOT,
 			.mode	= REGULATOR_MODE_NORMAL,
 			.disabled = 1,
 		},
@@ -710,7 +711,7 @@ static struct regulator_init_data aries_buck2_data = {
 		.valid_ops_mask	= REGULATOR_CHANGE_VOLTAGE |
 				  REGULATOR_CHANGE_STATUS,
 		.state_mem	= {
-			.uV	= 1100000,
+			.uV	= INTBOOT,
 			.mode	= REGULATOR_MODE_NORMAL,
 			.disabled = 1,
 		},
@@ -1108,7 +1109,7 @@ static int hx8369_backlight_on(struct platform_device *pdev)
 static int get_lcdtype(void)
 {
 	int panel_id;
-
+	
 	if((gpio_get_value(GPIO_OLED_ID)==0) && ( gpio_get_value(GPIO_DIC_ID) != 0))
 		panel_id = 0; // Sony Panel
 	else if((gpio_get_value(GPIO_OLED_ID)!=0) && ( gpio_get_value(GPIO_DIC_ID) == 0))
@@ -1712,7 +1713,7 @@ static int ce147_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-
+	
 	/* Turn CAM_SENSOR_A_2.8V(VDDA) on */
 	gpio_set_value(GPIO_GPB7, 1);
 	mdelay(1);
@@ -1779,7 +1780,7 @@ static int ce147_power_on(void)
 			pr_err("Failed to initialize camera regulators\n");
 			return -EINVAL;
 	}
-
+	
 	ce147_init();
 
 	/* CAM_VGA_nSTBY - GPB(0)  */
@@ -1799,7 +1800,7 @@ static int ce147_power_on(void)
 
 		return err;
 	}
-
+	
 	ce147_ldo_en(TRUE);
 
 	mdelay(1);
@@ -1861,10 +1862,10 @@ static int ce147_power_off(void)
 
 	/* CAM_IO_EN - GPB(7) */
 	err = gpio_request(GPIO_GPB7, "GPB7");
-
+	
 	if(err) {
 		printk(KERN_ERR "failed to request GPB7 for camera control\n");
-
+	
 		return err;
 	}
 
@@ -1873,16 +1874,16 @@ static int ce147_power_off(void)
 
 	if(err) {
 		printk(KERN_ERR "failed to request GPJ0 for camera control\n");
-
+	
 		return err;
 	}
 
 	/* CAM_MEGA_nRST - GPJ1(5) */
 	err = gpio_request(GPIO_CAM_MEGA_nRST, "GPJ1");
-
+	
 	if(err) {
 		printk(KERN_ERR "failed to request GPJ1 for camera control\n");
-
+	
 		return err;
 	}
 
@@ -1912,26 +1913,26 @@ static int ce147_power_off(void)
 
 	// CAM_VGA_nRST  LOW		
 	gpio_direction_output(GPIO_CAM_VGA_nRST, 1);
-
+	
 	gpio_set_value(GPIO_CAM_VGA_nRST, 0);
 
 	mdelay(1);
 
 	// CAM_MEGA_nRST - GPJ1(5) LOW
 	gpio_direction_output(GPIO_CAM_MEGA_nRST, 1);
-
+	
 	gpio_set_value(GPIO_CAM_MEGA_nRST, 0);
-
+	
 	mdelay(1);
 
 	// Mclk disable
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, 0);
-
+	
 	mdelay(1);
 
 	// CAM_MEGA_EN - GPJ0(6) LOW
 	gpio_direction_output(GPIO_CAM_MEGA_EN, 1);
-
+	
 	gpio_set_value(GPIO_CAM_MEGA_EN, 0);
 
 	mdelay(1);
@@ -1939,7 +1940,7 @@ static int ce147_power_off(void)
 	ce147_ldo_en(FALSE);
 
 	mdelay(1);
-
+	
 	gpio_free(GPIO_CAM_MEGA_EN);
 	gpio_free(GPIO_CAM_MEGA_nRST);
 	gpio_free(GPIO_CAM_VGA_nRST);
@@ -1998,7 +1999,7 @@ static int smdkc110_cam1_power(int onoff)
 	}
 
 	gpio_direction_output(S5PV210_GPB(0), 0);
-
+	
 	mdelay(1);
 
 	gpio_direction_output(S5PV210_GPB(0), 1);
@@ -2010,7 +2011,7 @@ static int smdkc110_cam1_power(int onoff)
 	mdelay(1);
 
 	gpio_free(S5PV210_GPB(0));
-
+	
 	mdelay(1);
 
 	/* CAM_VGA_nRST - GPB(2) */
@@ -2107,7 +2108,7 @@ static int s5k4ecgx_regulator_init(void)
 {
 	printk("%s: start\n", __func__);
 /*BUCK 4*/
-
+	
 	if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
 		cam_isp_core_regulator = regulator_get(NULL, "cam_soc_core");
 		if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
@@ -2115,7 +2116,7 @@ static int s5k4ecgx_regulator_init(void)
 			return -EINVAL;
 		}
 	}
-
+	
 /*ldo 15*/
 	if (IS_ERR_OR_NULL(cam_isp_host_regulator)) {
 		cam_isp_host_regulator = regulator_get(NULL, "cam_soc_a");
@@ -2195,7 +2196,7 @@ static int s5k4ecgx_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-
+	
 	/* Turn CAM_ISP_HOST_2.8V(VDDIO) on ldo 15*/
 	err = regulator_enable(cam_isp_host_regulator);
 	if (err) {
@@ -2211,7 +2212,7 @@ static int s5k4ecgx_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-
+	
 	/*ldo 16*/
 	err = regulator_enable(cam_vga_avdd_regulator);
 	if (err) {
@@ -2232,7 +2233,7 @@ static int s5k4ecgx_ldo_en(bool en)
 
 off:
 	result = err;
-
+	
 	/* ldo 16 */
 	err = regulator_disable(cam_vga_avdd_regulator);
 	if (err) {
@@ -2259,13 +2260,13 @@ off:
 		result = err;
 	}
 	/* BUCK 4 */
-
+	
 	err = regulator_disable(cam_isp_core_regulator);
 	if (err) {
 		pr_err("Failed to disable regulator cam_isp_core\n");
 		result = err;
 	}
-
+	
 	s3c_gpio_cfgpin(S5PV210_GPD0(1), S3C_GPIO_OUTPUT);
 	s3c_gpio_setpull(S5PV210_GPD0(1), S3C_GPIO_PULL_NONE);
 	gpio_set_value(S5PV210_GPD0(1), 0);
@@ -2303,13 +2304,13 @@ static int s5k4ecgx_power_on(void)
 
 		return err;
 	}
-
+	
 	s5k4ecgx_ldo_en(true);
 
 	gpio_direction_output(GPIO_CAM_VGA_nSTBY, 0);
 	gpio_set_value(GPIO_CAM_VGA_nSTBY, 1);
 	mdelay(6);
-
+	
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, S3C_GPIO_SFN(0x02));
 
 	mdelay(4);
@@ -2377,7 +2378,7 @@ static int s5k4ecgx_power_off(void)
 
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, 0);
 	udelay(50);
-
+	
 	gpio_direction_output(GPIO_CAM_nSTBY, 1);
 	gpio_set_value(GPIO_CAM_nSTBY, 0);
 	udelay(50);
@@ -2391,12 +2392,12 @@ static int s5k4ecgx_power_off(void)
 	udelay(50);
 
 	s5k4ecgx_ldo_en(false);
-
+	
 	gpio_free(GPIO_CAM_VGA_nSTBY);
 	gpio_free(GPIO_CAM_VGA_nRST);
 	gpio_free(GPIO_CAM_nSTBY);
 	gpio_free(GPIO_CAM_MEGA_nRST);
-
+	
 	return 0;
 }
 
@@ -2596,7 +2597,7 @@ static int s5k5ccgx_regulator_init(void)
 {
 	printk("%s: start\n", __func__);
 /*BUCK 4*/
-
+	
 	if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
 		cam_isp_core_regulator = regulator_get(NULL, "cam_soc_core");
 		if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
@@ -2604,7 +2605,7 @@ static int s5k5ccgx_regulator_init(void)
 			return -EINVAL;
 		}
 	}
-
+	
 /*ldo 15*/
 	if (IS_ERR_OR_NULL(cam_isp_host_regulator)) {
 		cam_isp_host_regulator = regulator_get(NULL, "cam_soc_a");
@@ -2681,7 +2682,7 @@ static int s5k5ccgx_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-
+	
 	/* Turn CAM_ISP_HOST_2.8V(VDDIO) on ldo 15*/
 	err = regulator_enable(cam_isp_host_regulator);
 	if (err) {
@@ -2717,7 +2718,7 @@ static int s5k5ccgx_ldo_en(bool en)
 
 off:
 	result = err;
-
+	
 	/* ldo 16 */
 	err = regulator_disable(cam_vga_avdd_regulator);
 	if (err) {
@@ -2732,13 +2733,13 @@ off:
 		result = err;
 	}
 	/* BUCK 4 */
-
+	
 	err = regulator_disable(cam_isp_core_regulator);
 	if (err) {
 		pr_err("Failed to disable regulator cam_isp_core\n");
 		result = err;
 	}
-
+	
 	/* ldo 13 */
 	err = regulator_disable(cam_vga_vddio_regulator);
 	if (err) {
@@ -2795,7 +2796,7 @@ static int s5k5ccgx_power_on(void)
 	gpio_direction_output(S5PV210_GPD0(1),  1);
 	gpio_set_value(S5PV210_GPD0(1), 1);
 	*/
-
+	
 	s5k5ccgx_ldo_en(true);
 
 	udelay(20);
@@ -3863,43 +3864,46 @@ static void __init android_pmem_set_platdata(void)
 #endif
 
 #ifdef CONFIG_CPU_FREQ
-	{
-		.freq	= 1520000,
-		.varm	= 1350000,
-		.vint	= 1150000,
+static struct s5pv210_cpufreq_voltage smdkc110_cpufreq_volt[] = {
+/*
+{
+		.freq	= 1400000,
+		.varm	= DVSARM1,
+		.vint	= DVSINT1,
 	}, {
-		.freq	= 1440000,
-		.varm	= 1330000,
-		.vint	= 1140000,
-	}, {
-		.freq	= 1380000,
-		.varm	= 1310000,
-		.vint	= 1130000,
-	}, {
-		.freq	= 1320000,
-		.varm	= 1300000,
-		.vint	= 1120000,
-	}, {
-		.freq	= 1260000,
-		.varm	= 1287500,
-		.vint	= 1100000,
-	}, {
+		.freq	= 1300000,
+		.varm	= DVSARM2,
+		.vint	= DVSINT2,
+	}, 
+	*/{
 		.freq	= 1200000,
-		.varm	= 1275000,
-		.vint	= 1100000,
-	}, {
+		.varm	= DVSARM3,
+		.vint	= DVSINT3,
+	},/* {
+		.freq	= 1100000,
+		.varm	= DVSARM3,
+		.vint	= DVSINT3,
+	}, */{
 		.freq	= 1000000,
-		.varm	= 1275000,
-		.vint	= 1100000,
+		.varm	= DVSARM4,
+		.vint	= DVSINT4,
 	}, {
 		.freq	=  800000,
-		.varm	= 1200000,
-		.vint	= 1100000,
+		.varm	= DVSARM5,
+		.vint	= DVSINT5,
 	}, {
 		.freq	=  400000,
-		.varm	= 1050000,
-		.vint	= 1100000,
-	}, 
+		.varm	= DVSARM6,
+		.vint	= DVSINT5,
+	}, {
+		.freq	=  200000,
+		.varm	=  DVSARM7,
+		.vint	= DVSINT5,
+	}, {
+		.freq	=  100000,
+		.varm	=  DVSARM8,
+		.vint	= DVSINT6,
+	},
 };
 
 static struct s5pv210_cpufreq_data smdkc110_cpufreq_plat = {
@@ -4353,13 +4357,13 @@ int __init aries_init_wifi_mem(void)
 		if (!wlan_static_skb[i])
 			goto err_skb_alloc;
 	}
-
+	
 	for (; i < 16; i++) {
 		wlan_static_skb[i] = dev_alloc_skb(DHD_SKB_2PAGE_BUFSIZE);
 		if (!wlan_static_skb[i])
 			goto err_skb_alloc;
 	}
-
+	
 	wlan_static_skb[i] = dev_alloc_skb(DHD_SKB_4PAGE_BUFSIZE);
 	if (!wlan_static_skb[i])
 		goto err_skb_alloc;
