@@ -538,18 +538,18 @@ static int s5pv210_target(struct cpufreq_policy *policy,
 		apll_old = apll_values[index];
 #else
 		switch (index) {
-		/* case OC0:
+		case OC0:
 			__raw_writel(APLL_VAL_1400, S5P_APLL_CON);
 			break;
 		case OC1:
 			__raw_writel(APLL_VAL_1320, S5P_APLL_CON);
-			break; */
+			break;
 		case OC2:
 			__raw_writel(APLL_VAL_1200, S5P_APLL_CON);
 			break;
-		/* case OC3:
+		case OC3:
 			__raw_writel(APLL_VAL_1100, S5P_APLL_CON);
-			break; */
+			break;
 		case L0:
 			__raw_writel(APLL_VAL_1000, S5P_APLL_CON);
 			break;
@@ -730,7 +730,7 @@ static void liveoc_init(void)
 
 void liveoc_update(unsigned int oc_value, unsigned int oc_low_freq, unsigned int oc_high_freq)
 {
-    int i, index, index_min = OC2, index_max = OC2, divider;
+    int i, index, index_min = OC0, index_max = OC0, divider;
 
     unsigned long fclk;
 pr_info("LIVEOC oc-value set to %u\n", oc_value);
