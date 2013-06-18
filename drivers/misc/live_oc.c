@@ -12,7 +12,7 @@
 #include <linux/miscdevice.h>
 #define LIVEOC_VERSION 1
 
-#define MAX_OCVALUE 150
+#define MAX_OCVALUE 130
 
 
 extern void liveoc_update(unsigned int oc_value, unsigned int oc_low_freq, unsigned int oc_high_freq, unsigned int selective_oc);
